@@ -16,8 +16,11 @@
 
 class PWM
 {
+
 	Adafruit_PWMServoDriver adafruit_pwm;
+
 public:
+
 	PWM()
 	: adafruit_pwm()
 	{
