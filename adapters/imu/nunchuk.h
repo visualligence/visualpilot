@@ -20,8 +20,6 @@ class IMU
 		Wire.write( data );
 
 		Wire.endTransmission();
-
-		delay( 10 );
 	}
 
 public:
@@ -30,18 +28,12 @@ public:
 
 	void setup()
 	{
-		Wire.begin();
-
 		send( 0x55, 0xF0 );
 		send( 0x00, 0xFB );
 	}
 
 	void update()
 	{
-		send( 0x00, 0x00 );
-
-		delay( 50 );
-
 		Wire.requestFrom( ADDRESS, 6 );
 
 		byte values[ 6 ];
@@ -56,6 +48,7 @@ public:
 		// jy = values[1]; // 255
 		// bc = !((values[5] >> 0) & 1); // 0-1
 		// bz = !((values[5] >> 1) & 1); // 0-1
+		send( 0x00, 0x00 );
 	}
 
 };
