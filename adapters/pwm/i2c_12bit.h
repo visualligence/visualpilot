@@ -14,22 +14,20 @@
 #define US_IN_S 1000000
 #define ADAFRUIT_FREQUENCY  ( US_IN_S / ( 0.9 * REFRESH_SERVO_US ) )
 
-class PWM
+class PWM : private Adafruit_PWMServoDriver
 {
-
-	Adafruit_PWMServoDriver adafruit_pwm;
 
 public:
 
 	PWM()
-	: adafruit_pwm()
+	: Adafruit_PWMServoDriver()
 	{
 	}
 
 	void setup( void )
 	{
-		adafruit_pwm.begin();
-		adafruit_pwm.setPWMFreq( ADAFRUIT_FREQUENCY );
+		reset();
+		setPWMFreq( ADAFRUIT_FREQUENCY );
 
 		// save I2C bitrate
 		//uint8_t twbrbackup = TWBR;
@@ -39,7 +37,7 @@ public:
 
 	void set( uint8_t pin, uint16_t value )
 	{
-		adafruit_pwm.setPWM( pin, 0, value );
+		setPWM( pin, 0, value );
 	}
 
 	void set_angle( uint8_t pin, uint8_t angle )
