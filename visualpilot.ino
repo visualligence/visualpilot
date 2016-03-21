@@ -1,55 +1,47 @@
-//#include "./adapters/i2c.h"
-
-#include "./adapters/displays/ssd1306_128x64_esp.h"
-#include "./adapters/pwm/i2c_12bit.h"
-#include "./adapters/imu/nunchuk.h"
-
-uint32_t loop_number = 0;
+#include "./adapters/imu/l3gd20h.h"
+#include "./adapters/imu/lsm303_a.h"
+#include "./adapters/imu/lsm303_m.h"
 
 uint16_t loop_start = 0;
 uint16_t loop_end = 1;
 uint16_t loop_duration = 1;
 
-Display display = Display();
-IMU imu = IMU();
-PWM pwm = PWM();
+IMU * imu_a, * imu_g, * imu_m;
 
 void setup(void) {
+	Serial.begin( 9600 );
+	while( !Serial );
+
+// 	imu_g = new L3GD20();
+// 	imu_g->setup();
+
+// 	imu_a = new LSM303_A();
+// 	imu_a->setup();
+
+	imu_m = new LSM303_M();
+	imu_m->setup();
+
 	Wire.begin();
-	Wire.setClock( 300000L );
-
-	display.setup();
-	imu.setup();
-	pwm.setup();
-}
-
-void draw(void) {
-	display.h_line( 0, 63, loop_number % 128 );
-
-	display.text( 128,  0, loop_number, Display::RIGHT );
-	display.text( 128, 10, 1000000L / loop_duration, Display::RIGHT );
-	display.text( 128, 20, loop_duration, Display::RIGHT );
-
-	atan2( imu.a.y, imu.a.x );
-
-	int radar_size = 30;
-
-	v3<uint16_t> radar;
-
-	radar.x = map( imu.a.x,  0, 1024, 0, radar_size );
-	radar.y = map( imu.a.y,  0, 1024, 0, radar_size );
-	radar.z = map( imu.a.z,  0, 1024, 0, radar_size );
-
-	display.line( radar_size/2, radar_size/2, radar.x, radar.y );
-	display.line( radar_size/2, radar_size,   radar.x, radar_size/2 + radar.z );
+	Wire.setClock( 400000L );
 }
 
 void loop(void) {
-	imu.update();
-	pwm.set_angle( 0, loop_number % 181 );
-	display.loop( draw );
+	Serial.print( " " );
 
-	loop_number ++;
+// 	Serial.print( loop_duration );
+// 	imu_g->g.print();
+// 	imu_a->a.print();
+	imu_m->m.print();
+// 	imu->m.print();
+//
+// 	Serial.print( imu->t );
+
+	Serial.println();
+
+// 	imu_g->loop();
+	imu_a->loop();
+	imu_m->loop();
+
 	loop_start = loop_end;
 	loop_end = millis();
 	loop_duration = loop_end - loop_start;
