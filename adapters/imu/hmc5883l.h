@@ -20,14 +20,9 @@ public:
 	void loop( void )
 	{
 		request( X, 6 );
-		x = read16();
-		y = read16();
-		z = read16();
-
-		x = x << 8 | x >> 8;
-		y = y << 8 | y >> 8;
-		z = z << 8 | z >> 8;
-
+		x = read16_swap();
+		y = read16_swap();
+		z = read16_swap();
 	}
 };
 

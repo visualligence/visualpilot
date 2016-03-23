@@ -58,6 +58,17 @@ public:
 		return read16();
 	}
 
+	uint16_t read16_swap()
+	{
+		return ( uint16_t )( ( read8() << 8 ) | read8() );
+	}
+
+	uint16_t read16_swap( uint8_t location )
+	{
+		request( location, 2 );
+		return read16_swap();
+	}
+
 	static void scan()
 	{
 		for( uint8_t address = 1; address < 127; address ++ )
