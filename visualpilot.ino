@@ -3,17 +3,27 @@
 #include "./adapters/imu/hmc5883l.h"
 #include "./adapters/imu/bmp180.h"
 
+#include "./adapters/rc/rc.h"
+
 #include "./scheduler/scheduler.h"
 
 ADXL345 * a;
 L3GD20 * g;
 HMC5883L * m;
 BMP180 * b;
+
 Scheduler * s;
+
+RCChannel * in_t, * in_x, * in_y, * in_z;
 
 void setup(void) {
 	Serial.begin( 9600 );
 	while( !Serial );
+
+	in_t = new RCChannelPin<D5>();
+	in_x = new RCChannelPin<D6>();
+	in_y = new RCChannelPin<D7>();
+	in_z = new RCChannelPin<D8>();
 
 	Wire.begin();
 	Wire.setClock( 400000L );
@@ -28,17 +38,22 @@ void setup(void) {
 }
 
 void loop(void) {
+	s->loop();
 	a->loop();
 	g->loop();
 	m->loop();
 	b->loop();
-	s->loop();
 
+	s->print();
 	a->print();
 	g->print();
 	m->print();
 	b->print();
-	s->print();
+
+	in_t->print();
+	in_x->print();
+	in_y->print();
+	in_z->print();
 
 	Serial.println();
 }

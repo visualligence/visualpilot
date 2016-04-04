@@ -1,70 +1,46 @@
 #pragma once
 
-uint16_t m;
-volatile uint16_t s;
-
-void change( void )
+class RCChannel
 {
-	if( digitalRead( 7 ) )
-		s = 1;//micros() - m;
-	else
-		m = micros();
-}
-
-struct RCChannel
-{
-	uint8_t pin;
-	uint16_t value;
-
-	RCChannel( uint8_t pin = 0 )
-	{
-		this->value = 0;
-		this->pin = pin;
-
-		if( pin != 0 )
-		{
-			pinMode( pin, INPUT );
-			attachInterrupt( digitalPinToInterrupt( pin ), change, CHANGE );
-		}
-	}
-
-	void read()
-	{
-		if( pin != 0 && s != 0 )
-		{
-			value = s;
-			s = 0;
-		}
-	}
+public:
+	virtual void print() = 0;
 };
 
-template<uint8_t num_channels>
-class RC
-{
-	RCChannel rc_channels[ num_channels ];
 
+template<int pin>
+class RCChannelPin : public RCChannel
+{
 public:
 
-	RC( uint8_t pins[ num_channels ] )
+	volatile static uint32_t last_value;
+	volatile static uint32_t last_high;
+
+	void static rising( void )
 	{
-		for( uint8_t i = 0 ; i < num_channels ; i ++ )
-			rc_channels[ i ] = RCChannel( pins[ i ] );
+		last_high = micros();
 	}
 
-	void loop()
+	void static falling( void )
 	{
-		for( uint8_t i = 0 ; i < num_channels ; i ++ )
-			rc_channels[ i ].read();
+		last_value = micros() - last_high;
+	}
+
+	RCChannelPin()
+	{
+		pinMode( pin, INPUT );
+		attachInterrupt( digitalPinToInterrupt( pin ), rising,  RISING  );
+		attachInterrupt( digitalPinToInterrupt( pin ), falling, FALLING );
 	}
 
 	void print()
 	{
-		for( uint8_t i = 0 ; i < num_channels ; i ++ )
-		{
-			Serial.print( rc_channels[ i ].value );
-			Serial.print( "\t" );
-		}
+		Serial.print( last_value );
+		Serial.print( "\t" );
 	}
 };
 
+template<int pin>
+volatile uint32_t RCChannelPin<pin>::last_value = 0;
 
+template<int pin>
+volatile uint32_t RCChannelPin<pin>::last_high = 0;

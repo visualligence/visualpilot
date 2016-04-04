@@ -22,9 +22,9 @@ public:
 	void print( void )
 	{
 		if( last_end > last_start )
-			Serial.print( "--" );
-		else
 			Serial.print( 1000000 / ( last_end - last_start ) );
+		else
+			Serial.print( 0 );
 
 		Serial.print( "\t" );
 	}
