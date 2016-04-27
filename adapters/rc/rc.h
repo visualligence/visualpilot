@@ -15,6 +15,13 @@ public:
 	volatile static uint32_t last_value;
 	volatile static uint32_t last_high;
 
+	RCChannelPin()
+	{
+		pinMode( pin, INPUT );
+		attachInterrupt( digitalPinToInterrupt( pin ), rising,  RISING  );
+		attachInterrupt( digitalPinToInterrupt( pin ), falling, FALLING );
+	}
+
 	void static rising( void )
 	{
 		last_high = micros();
@@ -23,13 +30,6 @@ public:
 	void static falling( void )
 	{
 		last_value = micros() - last_high;
-	}
-
-	RCChannelPin()
-	{
-		pinMode( pin, INPUT );
-		attachInterrupt( digitalPinToInterrupt( pin ), rising,  RISING  );
-		attachInterrupt( digitalPinToInterrupt( pin ), falling, FALLING );
 	}
 
 	void print()
